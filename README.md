@@ -1,5 +1,13 @@
 # Description
 
+This project is for study statistical hypothesis testing by using program e.g. MATLAB (Statistical & Machine learning Toolbox) or Python (Spicy) 
+
+This project contain 
+- assets (dataset or iris flower)
+- python code (for split dataset into 3 subsets, hypothesis testing, etc.)
+
+## Statistical Hypothesis testing
+
 **[Statistic, Hypothesis testing](https://www.sciencedirect.com/topics/mathematics/statistical-hypothesis/)**
 
 The **Statistical Hypothesis testing** is a way to test the results of a experiment to see if you have meaningful results.
@@ -15,9 +23,9 @@ The **Statistical Hypothesis testing** is a way to test the results of a experim
 
 2. Sources:
 
-     (a) Creator: R.A. Fisher
-     (b) Donor: Michael Marshall : MARSHALL%PLU@io.arc.nasa.gov
-     (c) Date: July, 1988
+     a. Creator: R.A. Fisher
+     b. Donor: Michael Marshall : MARSHALL%PLU@io.arc.nasa.gov
+     c. Date: July, 1988
 
 3. Past Usage:
 
@@ -51,7 +59,7 @@ separable from each other.
 - Predicted attribute: class of iris plant.
 - This is an exceedingly simple domain.
 - This data differs from the data presented in Fishers article
-(identified by Steve Chadwick,  (spchadwick@espeedaz.net))
+(identified by Steve Chadwick,  spchadwick@espeedaz.net)
 
 The 35th sample should be: 4.9,3.1,1.5,0.2,"Iris-setosa"
 where the error is in the fourth feature.
