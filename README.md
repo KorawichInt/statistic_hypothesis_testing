@@ -3,8 +3,16 @@
 This project is for study statistical hypothesis testing by using program e.g. MATLAB (Statistical & Machine learning Toolbox) or Python (Spicy) 
 
 This project contain 
-- assets (dataset or iris flower)
-- python code (for split dataset into 3 subsets, hypothesis testing, etc.)
+- README.md
+- assets 
+- hypothesis_testing.py
+
+`Steps of assignment`
+1. Split dataset into 3 subsets by sampling, subset 1 have 80 records (for Training Set), subset 2 have 38 records (for Validation Set) and subset 3 have 32 records (for Testing Set)
+2. Students are wondering if 3 subsets have bias to developed machine learning model. Therefore, students want to test various statistical values. By testing hypothesis that all 3 subsets are
+    1. The proportions of all 3 types of flowers in all 3 subsets have the same average quantity at significance level 0.05
+    2. The average values of sepal length, sepal width, petal length and petal width are the same at significance level 0.05
+3. Test the above hypothesis. And if all 3 subsets values does not meet up the above hypothesis. Require students to develop a method for randomly selecting data (sampling) to create subset 1, 2 and 3 that meet the above hypothesis.
 
 ## Statistical Hypothesis testing
 
