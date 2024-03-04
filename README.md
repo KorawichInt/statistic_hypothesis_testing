@@ -10,7 +10,8 @@ The **Statistical Hypothesis testing** is a way to test the results of a experim
 
 **Detail from iris.names**
 1. Title: Iris Plants Database
-	Updated Sept 21 by C.Blake - Added discrepency information
+	
+    Updated Sept 21 by C.Blake - Added discrepency information
 
 2. Sources:
      (a) Creator: R.A. Fisher
@@ -64,9 +65,9 @@ The **Statistical Hypothesis testing** is a way to test the results of a experim
    3. petal length in cm
    4. petal width in cm
    5. class: 
-      -- Iris Setosa
-      -- Iris Versicolour
-      -- Iris Virginica
+      - Iris Setosa
+      - Iris Versicolour
+      - Iris Virginica
 
 8. Missing Attribute Values: None
 
