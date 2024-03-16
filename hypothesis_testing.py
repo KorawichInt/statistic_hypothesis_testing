@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import numpy as np
+from scipy import stats
 
 
 def check_file_exists(file_path):
@@ -18,7 +18,8 @@ def sampling_data(destination_path, destination_path2):
         frac=1, random_state=42).reset_index(drop=True)
     group_sizes = [80, 38, 32]
     training_set = data_shuffled[:group_sizes[0]]
-    validation_set = data_shuffled[group_sizes[0]:group_sizes[0]+group_sizes[1]]
+    validation_set = data_shuffled[group_sizes[0]
+        :group_sizes[0]+group_sizes[1]]
     testing_set = data_shuffled[group_sizes[0]+group_sizes[1]:]
     training_set.to_csv(destination_path2[0], index=False, header=False)
     validation_set.to_csv(destination_path2[1], index=False, header=False)
@@ -34,6 +35,17 @@ def class_proportion(destination_path, classes):
     count_list = class_counts.values.tolist()
     proportion_list = [c/sum(count_list) for c in count_list]
     return proportion_list
+
+
+def proportion_ztest(mean_proportion, alpha):
+    stat, p_value = stats.proportions_ztest(mean_proportion)
+    print("Z-score:", stat)
+    print("P-value:", p_value)
+    alpha = alpha  # Significance level
+    if p_value < alpha:
+        print("Reject the null hypothesis: Proportions are significantly different.")
+    else:
+        print("Fail to reject the null hypothesis: Proportions are not significantly different.")
 
 
 if __name__ == "__main__":
@@ -71,8 +83,12 @@ if __name__ == "__main__":
     for i in range(len(classes)):
         print(f"{classes[i]} proportion = {testing_set_proportion[i]}")
 
-    print("\nMean Proportion")
+    print("\n# Mean Proportion")
     mean_proportion = [(train + validate + test)/3 for train, validate, test in zip(
         trainning_set_proportion, validation_set_proportion, testing_set_proportion)]
     for i in range(len(classes)):
         print(f"{classes[i]} proportion mean = {mean_proportion[i]}")
+
+    # proportion z test
+    alpha = 0.05
+    proportion_ztest(mean_proportion, alpha)
