@@ -20,7 +20,8 @@ def sampling_data(destination_path, destination_path2):
         frac=1, random_state=42).reset_index(drop=True)
     group_sizes = [80, 38, 32]
     training_set = data_shuffled[:group_sizes[0]]
-    validation_set = data_shuffled[group_sizes[0]:group_sizes[0]+group_sizes[1]]
+    validation_set = data_shuffled[group_sizes[0]
+        :group_sizes[0]+group_sizes[1]]
     testing_set = data_shuffled[group_sizes[0]+group_sizes[1]:]
     training_set.to_csv(destination_path2[0], index=False, header=False)
     validation_set.to_csv(destination_path2[1], index=False, header=False)
@@ -38,6 +39,14 @@ def class_count(destination_path, classes):
     return count_dict
 
 
+def sepal_petal_mean(destination_path):
+    df = pd.read_csv(destination_path, header=None)
+    df.iloc[:, :-1] = df.iloc[:, :-1].apply(pd.to_numeric)
+    mean_values = df.iloc[:, :-1].mean()
+    mean_list = mean_values.tolist()
+    return mean_list
+
+
 def chi_square_test(observed_df):
     chi2_stat, p_val, dof, expected_counts = chi2_contingency(observed_df)
     return chi2_stat, p_val, dof, expected_counts
@@ -46,13 +55,21 @@ def chi_square_test(observed_df):
 def decision_and_conclusion(chi2_stat, p_val, alpha):
     chi_critical = chi2.ppf(1 - alpha, dof)
     if (chi2_stat <= chi_critical) and (p_val >= alpha):
-        print(f"Since,\tchi-square value \t\t= {chi2_stat:.4f}\
+        return (f"Since,\tchi-square value \t\t= {chi2_stat:.4f}\
             \n\tchi-square critical value \t= {chi_critical:.4f}\
             \nand\tp-value \t\t\t= {p_val:.4f}\n\tsignificance coefficient \t= {alpha}\
             \nso,\tchi-square value < chi-square critical value\
             \nalso,\tp-value > significance coefficient\
             \n\nConclusion\n-Fail to reject null hypothesis (H0)\
             \n-This mean there is insufficient evidence to conclude that the proportion of all iris's class are differ.")
+    else:
+        return (f"Since,\tchi-square value \t\t= {chi2_stat:.4f}\
+            \n\tchi-square critical value \t= {chi_critical:.4f}\
+            \nand\tp-value \t\t\t= {p_val:.4f}\n\tsignificance coefficient \t= {alpha}\
+            \nso,\tchi-square value > chi-square critical value\
+            \nalso,\tp-value < significance coefficient\
+            \n\nConclusion\n-Reject null hypothesis (H0)\
+            \n-This mean there is sufficient evidence to conclude that the proportion of all iris's class are differ.")
 
 
 if __name__ == "__main__":
@@ -75,6 +92,7 @@ if __name__ == "__main__":
     if not (check_training_set):
         sampling_data(destination_path, destination_path2)
 
+    """Hypothesis 1: Are proportion of all 3 iris's class equal with significance level 5%"""
     # count number of each classes from 3 group
     classes = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
     training_set_class_count = class_count(destination_path2[0], classes)
@@ -93,11 +111,25 @@ if __name__ == "__main__":
         observed_df)
 
     # visualize expected freequency with dataframe
-    p_columns = ['Training_set', 'Validation_set', 'Testing_set']
+    columns = ['Training_set', 'Validation_set', 'Testing_set']
     expected_df = pd.DataFrame(
-        expected_counts, index=classes, columns=p_columns)
+        expected_counts, index=classes, columns=columns)
     # print('# Expected Frequency\n', expected_df, '\n')
 
     # decision and conclusion
     alpha = 0.05
-    decision_and_conclusion(chi2_stat, p_val, alpha)
+    asm1_result = decision_and_conclusion(chi2_stat, p_val, alpha)
+    # print(asm1_result)
+
+    """Hypothesis 2: Are mean of Sepal length, Sepal width, Petal length and Petal width equal with significance level 5%"""
+    print()
+    sepal_and_petal = ['SepalLength',
+                       'SepalWidth', 'PetalLength', 'PetalWidth']
+    training_set_mean = sepal_petal_mean(destination_path2[0])
+    validation_set_mean = sepal_petal_mean(destination_path2[1])
+    testing_set_mean = sepal_petal_mean(destination_path2[2])
+    all_mean_transpose = list(map(list, zip(*[training_set_mean, validation_set_mean,
+                                              testing_set_mean])))
+    all_mean_df = pd.DataFrame(all_mean_transpose, columns=columns,
+                               index=sepal_and_petal)
+    print(all_mean_df)
