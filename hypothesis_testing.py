@@ -78,7 +78,7 @@ def proportion_test_integrated():
     validation_set_class_count = class_count(destination_path2[1], classes)
     testing_set_class_count = class_count(destination_path2[2], classes)
     all_set_dict = {columns[0]: training_set_class_count,
-                    columns[1]:  validation_set_class_count,
+                    columns[1]: validation_set_class_count,
                     columns[2]: testing_set_class_count}
 
     observed_df = pd.DataFrame.from_dict(all_set_dict)
@@ -99,7 +99,6 @@ def proportion_test_integrated():
 
 if __name__ == "__main__":
     # define path, parameters, other assets
-    print()
     source_path = r'assets\iris\iris.data'
     destination_path = r'csv_repository\iris_data.csv'
     destination_path2 = [r'csv_repository\training_set.csv',
@@ -122,6 +121,7 @@ if __name__ == "__main__":
         sampling_data(destination_path, destination_path2)
 
     """Hypothesis 1: Are proportion of all 3 iris's class equal with significance level 5%"""
+    print()
     asm1 = proportion_test_integrated()
     print(asm1)
 
