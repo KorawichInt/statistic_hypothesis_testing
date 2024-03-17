@@ -20,7 +20,7 @@ def sampling_data(destination_path, destination_path2):
         frac=1, random_state=42).reset_index(drop=True)
     group_sizes = [80, 38, 32]
     training_set = data_shuffled[:group_sizes[0]]
-    validation_set = data_shuffled[group_sizes[0]                                   :group_sizes[0]+group_sizes[1]]
+    validation_set = data_shuffled[group_sizes[0]:group_sizes[0]+group_sizes[1]]
     testing_set = data_shuffled[group_sizes[0]+group_sizes[1]:]
     training_set.to_csv(destination_path2[0], index=False, header=False)
     validation_set.to_csv(destination_path2[1], index=False, header=False)
@@ -43,17 +43,21 @@ def chi_square_test(observed_df):
     return chi2_stat, p_val, dof, expected_counts
 
 
-# def decision_and_conclusion():
-#     print("Chi-square statistic:", chi2_stat)
-#     chi_critical = chi2.ppf(1 - alpha, dof)
-#     print("Chi-square critical value:", chi_critical)
-#     # if
-#     print("\nP-value:", p_val)
-#     print("Siginifance Coefficient =", alpha)
+def decision_and_conclusion(chi2_stat, p_val, alpha):
+    chi_critical = chi2.ppf(1 - alpha, dof)
+    if (chi2_stat <= chi_critical) and (p_val >= alpha):
+        print(f"Since,\tchi-square value \t\t= {chi2_stat:.4f}\
+            \n\tchi-square critical value \t= {chi_critical:.4f}\
+            \nand\tp-value \t\t\t= {p_val:.4f}\n\tsignificance coefficient \t= {alpha}\
+            \nso,\tchi-square value < chi-square critical value\
+            \nalso,\tp-value > significance coefficient\
+            \n\nConclusion\n-Fail to reject null hypothesis (H0)\
+            \n-This mean there is insufficient evidence to conclude that the proportion of all iris's class are differ.")
 
 
 if __name__ == "__main__":
     # define path
+    print()
     source_path = r'assets\iris\iris.data'
     destination_path = r'csv_repository\iris_data.csv'
     destination_path2 = [r'csv_repository\training_set.csv',
@@ -82,7 +86,7 @@ if __name__ == "__main__":
 
     # visualize observed freequency with dataframe
     observed_df = pd.DataFrame.from_dict(all_set_dict)
-    print('\n# Observed Frequency\n', observed_df, '\n')
+    # print('# Observed Frequency\n', observed_df, '\n')
 
     # chi-square test
     chi2_stat, p_val, dof, expected_counts = chi_square_test(
@@ -92,7 +96,8 @@ if __name__ == "__main__":
     p_columns = ['Training_set', 'Validation_set', 'Testing_set']
     expected_df = pd.DataFrame(
         expected_counts, index=classes, columns=p_columns)
-    print('# Expected Frequency\n', expected_df, '\n')
+    # print('# Expected Frequency\n', expected_df, '\n')
 
     # decision and conclusion
-    # alpha = 0.05
+    alpha = 0.05
+    decision_and_conclusion(chi2_stat, p_val, alpha)
