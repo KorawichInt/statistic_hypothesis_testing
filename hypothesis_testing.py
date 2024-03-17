@@ -3,6 +3,7 @@ import os
 import numpy as np
 from scipy.stats import chi2_contingency
 from scipy.stats import chi2
+from scipy.stats import f_oneway
 
 
 def check_file_exists(file_path):
@@ -20,8 +21,7 @@ def sampling_data(destination_path, destination_path2):
         frac=1, random_state=42).reset_index(drop=True)
     group_sizes = [80, 38, 32]
     training_set = data_shuffled[:group_sizes[0]]
-    validation_set = data_shuffled[group_sizes[0]
-        :group_sizes[0]+group_sizes[1]]
+    validation_set = data_shuffled[group_sizes[0]                                   :group_sizes[0]+group_sizes[1]]
     testing_set = data_shuffled[group_sizes[0]+group_sizes[1]:]
     training_set.to_csv(destination_path2[0], index=False, header=False)
     validation_set.to_csv(destination_path2[1], index=False, header=False)
@@ -52,7 +52,7 @@ def chi_square_test(observed_df):
     return chi2_stat, p_val, dof, expected_counts
 
 
-def decision_and_conclusion(chi2_stat, p_val, alpha):
+def decision_and_conclusion(chi2_stat, p_val, alpha, dof):
     chi_critical = chi2.ppf(1 - alpha, dof)
     if (chi2_stat <= chi_critical) and (p_val >= alpha):
         return (f"Since,\tchi-square value \t\t= {chi2_stat:.4f}\
@@ -68,18 +68,47 @@ def decision_and_conclusion(chi2_stat, p_val, alpha):
             \nand\tp-value \t\t\t= {p_val:.4f}\n\tsignificance coefficient \t= {alpha}\
             \nso,\tchi-square value > chi-square critical value\
             \nalso,\tp-value < significance coefficient\
-            \n\nConclusion\n-Reject null hypothesis (H0)\
+            \n\nConclusion\n-Reject null hypothesis (H0).\
             \n-This mean there is sufficient evidence to conclude that the proportion of all iris's class are differ.")
 
 
+def proportion_test_integrated():
+    # count number of each classes from 3 group
+    training_set_class_count = class_count(destination_path2[0], classes)
+    validation_set_class_count = class_count(destination_path2[1], classes)
+    testing_set_class_count = class_count(destination_path2[2], classes)
+    all_set_dict = {columns[0]: training_set_class_count,
+                    columns[1]:  validation_set_class_count,
+                    columns[2]: testing_set_class_count}
+
+    observed_df = pd.DataFrame.from_dict(all_set_dict)
+
+    # chi-square test
+    chi2_stat, p_val, dof, expected_counts = chi_square_test(observed_df)
+
+    # visualize observed and expected freequency with dataframe
+    expected_df = pd.DataFrame(expected_counts, index=classes, columns=columns)
+    # print('# Observed Frequency\n', observed_df, '\n')
+    # print('# Expected Frequency\n', expected_df, '\n')
+
+    # decision and conclusion
+    alpha = 0.05
+    asm1_result = decision_and_conclusion(chi2_stat, p_val, alpha, dof)
+    return asm1_result
+
+
 if __name__ == "__main__":
-    # define path
+    # define path, parameters, other assets
     print()
     source_path = r'assets\iris\iris.data'
     destination_path = r'csv_repository\iris_data.csv'
     destination_path2 = [r'csv_repository\training_set.csv',
                          r'csv_repository\validation_set.csv',
                          r'csv_repository\testing_set.csv']
+    classes = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
+    columns = ['Training_set', 'Validation_set', 'Testing_set']
+    feature_sd = {'SepalLength': 0.83, 'SepalWidth': 0.43,
+                  'PetalLength': 1.76, 'PetalWidth': 0.76}
 
     # read iris.data and write to csv format with columns name
     # check if iris_data.csv is not exists
@@ -93,38 +122,16 @@ if __name__ == "__main__":
         sampling_data(destination_path, destination_path2)
 
     """Hypothesis 1: Are proportion of all 3 iris's class equal with significance level 5%"""
-    # count number of each classes from 3 group
-    classes = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
-    training_set_class_count = class_count(destination_path2[0], classes)
-    validation_set_class_count = class_count(destination_path2[1], classes)
-    testing_set_class_count = class_count(destination_path2[2], classes)
-    all_set_dict = {'Traning_set': training_set_class_count,
-                    'Validation_set':  validation_set_class_count,
-                    'Testing_set': testing_set_class_count}
-
-    # visualize observed freequency with dataframe
-    observed_df = pd.DataFrame.from_dict(all_set_dict)
-    # print('# Observed Frequency\n', observed_df, '\n')
-
-    # chi-square test
-    chi2_stat, p_val, dof, expected_counts = chi_square_test(
-        observed_df)
-
-    # visualize expected freequency with dataframe
-    columns = ['Training_set', 'Validation_set', 'Testing_set']
-    expected_df = pd.DataFrame(
-        expected_counts, index=classes, columns=columns)
-    # print('# Expected Frequency\n', expected_df, '\n')
-
-    # decision and conclusion
-    alpha = 0.05
-    asm1_result = decision_and_conclusion(chi2_stat, p_val, alpha)
-    # print(asm1_result)
+    asm1 = proportion_test_integrated()
+    print(asm1)
 
     """Hypothesis 2: Are mean of Sepal length, Sepal width, Petal length and Petal width equal with significance level 5%"""
     print()
-    sepal_and_petal = ['SepalLength',
-                       'SepalWidth', 'PetalLength', 'PetalWidth']
+    feature_sd_df = pd.DataFrame(list(feature_sd.values()), columns=[
+                                 'SD'], index=feature_sd.keys())
+    print(feature_sd_df)
+    sepal_and_petal = [key for key in feature_sd.keys()]
+    print(sepal_and_petal)
     training_set_mean = sepal_petal_mean(destination_path2[0])
     validation_set_mean = sepal_petal_mean(destination_path2[1])
     testing_set_mean = sepal_petal_mean(destination_path2[2])
@@ -132,4 +139,4 @@ if __name__ == "__main__":
                                               testing_set_mean])))
     all_mean_df = pd.DataFrame(all_mean_transpose, columns=columns,
                                index=sepal_and_petal)
-    print(all_mean_df)
+    # print(all_mean_df)
